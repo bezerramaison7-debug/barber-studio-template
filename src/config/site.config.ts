@@ -3,9 +3,12 @@ import type { SiteConfig } from "./types";
 /**
  * ARQUIVO CENTRAL DE CONFIGURAÇÃO
  * --------------------------------
- * Tudo o que muda de um cliente para outro está aqui: nome, cores, imagens,
- * serviços, preços, equipe, endereço, horários, WhatsApp e redes sociais.
- * Veja docs/PERSONALIZACAO.md para o passo a passo.
+ * Tudo o que muda de um cliente para outro está aqui: plano, nome, textos, cores,
+ * imagens, serviços, preços, equipe, endereço, horários, regiões, WhatsApp e redes.
+ * Veja docs/PERSONALIZACAO.md para o passo a passo e docs/PLANOS.md para os planos.
+ *
+ * O build valida este arquivo (src/lib/validate-config.ts). Com demo: false, ele exige
+ * WhatsApp válido e confirmado, dados da LGPD e direitos das imagens.
  *
  * ATENÇÃO: todo o conteúdo abaixo é FICTÍCIO e serve apenas para demonstração.
  * Não há avaliações, profissionais, endereço ou telefone reais.
@@ -13,30 +16,33 @@ import type { SiteConfig } from "./types";
 export const siteConfig: SiteConfig = {
   demo: true,
 
+  // A demonstração mostra o plano completo. Para ver o essencial: SITE_PLAN=essencial npm run build
+  plan: "premium",
+
   business: {
     name: "Barber Studio",
     shortName: "Barber Studio",
-    tagline: "Barbearia com hora marcada em Araraquara/SP",
+    tagline: "Barbearia em Araraquara/SP",
     description:
-      "Corte, barba e acabamento feitos com calma, em um ambiente reservado. Você escolhe o horário pelo WhatsApp e é atendido na hora combinada.",
+      "Corte de cabelo, barba e acabamento masculino no centro de Araraquara. Escolha o serviço e combine o horário pelo WhatsApp.",
     priceRange: "$$",
   },
 
   about: {
-    title: "Feito sem pressa",
-    text: "Um estúdio pequeno no centro de Araraquara, pensado para quem quer sair com o corte certo e não perder a tarde esperando.",
+    title: "O estúdio",
+    text: "Um espaço de barbearia no centro de Araraquara para corte de cabelo, barba e acabamento.",
     highlights: [
       {
-        title: "Hora marcada de verdade",
-        text: "Você chega no horário combinado e senta na cadeira. Sem fila, sem senha.",
+        title: "Tesoura e máquina",
+        text: "Cortes clássicos e degradês, com acabamento na navalha.",
       },
       {
-        title: "Toalha quente e navalha",
-        text: "A barba é feita do jeito tradicional, com produtos que cuidam da pele.",
+        title: "Barba com toalha quente",
+        text: "Contorno na máquina e na navalha, com óleo para os fios.",
       },
       {
-        title: "Um cliente por vez",
-        text: "Cada profissional atende uma pessoa de cada vez, com o tempo que o corte pede.",
+        title: "Agendamento pelo WhatsApp",
+        text: "Você escolhe o serviço e combina o horário direto com a barbearia.",
       },
     ],
   },
@@ -45,25 +51,29 @@ export const siteConfig: SiteConfig = {
   url: "https://example.com",
 
   theme: {
-    colors: {
-      background: "#000000",
-      surface: "#17181a",
-      surfaceRaised: "#232427",
-      border: "#34353a",
-      foreground: "#f5f4f0",
-      muted: "#a3a29c",
-      accent: "#b39257",
-      accentForeground: "#000000",
-      paper: "#f5f4f0",
-      ink: "#17181a",
-    },
+    // Paletas: "classico" (preto e dourado), "grafite" (prata) ou "carvalho" (cobre).
+    preset: "classico",
+    // Premium: ajuste cor a cor sobre o preset, ex.: colors: { accent: "#c9a46a" }.
   },
 
   contact: {
-    // Demonstração: vazio de propósito. Coloque o número real do cliente, só dígitos.
+    // Demonstração: vazio de propósito (o build recusa número com demo: true).
+    // Cliente real: só dígitos, com 55 e DDD, e a data em que o número foi testado.
     whatsapp: "",
-    phoneDisplay: "(16) 90000-0000 · fictício",
+    phoneDisplay: "",
     email: "contato@example.com", // domínio reservado para exemplos (RFC 2606): nunca entrega e-mail
+  },
+
+  legal: {
+    controllerName: "Barber Studio (marca fictícia de demonstração)",
+    privacyEmail: "privacidade@example.com",
+    privacyUpdatedAt: "2026-10-21",
+  },
+
+  imageRights: {
+    status: "ilustrativas-demo",
+    notes:
+      "Fotos ilustrativas do Unsplash (ver docs/CREDITOS.md). A licença de cada foto não pôde ser conferida automaticamente.",
   },
 
   address: {
@@ -133,6 +143,14 @@ export const siteConfig: SiteConfig = {
       durationMinutes: 40,
       price: 45,
       featured: true,
+      page: {
+        summary: "Corte masculino na tesoura e na máquina, finalizado com lavagem e pomada.",
+        body: [
+          "O corte clássico combina tesoura em cima e máquina nas laterais, no comprimento que você escolher. Antes de começar, o barbeiro confirma com você o formato e o acabamento.",
+          "No fim, o cabelo é lavado e finalizado com pomada, para você ver como o corte fica no dia a dia.",
+        ],
+        includes: ["Conversa sobre o formato desejado", "Corte na tesoura e na máquina", "Lavagem", "Finalização com pomada"],
+      },
     },
     {
       id: "degrade",
@@ -142,12 +160,20 @@ export const siteConfig: SiteConfig = {
       durationMinutes: 45,
       price: 50,
       featured: true,
+      page: {
+        summary: "Degradê baixo, médio ou alto, com transição feita na máquina e acabamento na navalha.",
+        body: [
+          "No degradê, as laterais e a nuca vão ficando mais curtas aos poucos. A altura da transição (baixa, média ou alta) é combinada antes do corte.",
+          "O contorno é finalizado na navalha. A parte de cima pode ser mantida mais longa ou acompanhar o degradê.",
+        ],
+        includes: ["Escolha da altura da transição", "Degradê na máquina", "Contorno na navalha"],
+      },
     },
     {
       id: "corte-infantil",
       categoryId: "cabelo",
       name: "Corte infantil",
-      description: "Para crianças até 10 anos, com tempo extra para elas se acostumarem.",
+      description: "Para crianças até 10 anos.",
       durationMinutes: 35,
       price: 40,
     },
@@ -159,6 +185,14 @@ export const siteConfig: SiteConfig = {
       durationMinutes: 30,
       price: 35,
       featured: true,
+      page: {
+        summary: "Barba feita com toalha quente, navalha e óleo para os fios.",
+        body: [
+          "A toalha quente amolece os fios antes do corte. Depois vem o contorno na máquina e o acabamento na navalha, no desenho que você preferir.",
+          "No fim é aplicado óleo nos fios da barba.",
+        ],
+        includes: ["Toalha quente", "Contorno na máquina", "Acabamento na navalha", "Óleo para a barba"],
+      },
     },
     {
       id: "barba-desenhada",
@@ -176,6 +210,14 @@ export const siteConfig: SiteConfig = {
       durationMinutes: 70,
       price: 75,
       featured: true,
+      page: {
+        summary: "Corte de cabelo e barba com toalha quente no mesmo atendimento.",
+        body: [
+          "O combo junta o corte de cabelo à escolha e a barba com toalha quente, em um único horário.",
+          "É a opção para quem quer resolver cabelo e barba de uma vez.",
+        ],
+        includes: ["Corte à escolha", "Barba com toalha quente", "Finalização"],
+      },
     },
     {
       id: "corte-sobrancelha",
@@ -197,7 +239,7 @@ export const siteConfig: SiteConfig = {
       id: "pigmentacao",
       categoryId: "extras",
       name: "Pigmentação",
-      description: "Disfarça falhas na barba ou no cabelo. Dura até a próxima lavagem.",
+      description: "Disfarça falhas na barba ou no cabelo. Efeito temporário.",
       durationMinutes: 20,
       price: 30,
     },
@@ -304,7 +346,7 @@ export const siteConfig: SiteConfig = {
     {
       question: "Preciso agendar ou posso chegar sem horário?",
       answer:
-        "O atendimento é com hora marcada, para ninguém esperar. Se houver horário livre, encaixamos quem chegar.",
+        "Prefira agendar pelo WhatsApp. Se houver horário livre, dá para ser atendido sem agendamento.",
     },
     {
       question: "Como funciona o agendamento pelo WhatsApp?",
@@ -330,7 +372,7 @@ export const siteConfig: SiteConfig = {
   seo: {
     title: "Barber Studio | Barbearia em Araraquara/SP",
     description:
-      "Barbearia com hora marcada em Araraquara/SP: corte masculino, degradê, barba com toalha quente e combos. Agende pelo WhatsApp. Site demonstrativo.",
+      "Barbearia em Araraquara/SP: corte masculino, degradê, barba com toalha quente e combos. Agende pelo WhatsApp. Site demonstrativo.",
     keywords: [
       "barbearia em Araraquara",
       "barbeiro Araraquara",

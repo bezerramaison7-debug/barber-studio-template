@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { ImageResponse } from "next/og";
 import { siteConfig } from "@/config/site.config";
+import { resolveThemeColors } from "@/lib/theme";
 
 export const alt = siteConfig.seo.title;
 export const size = { width: 1200, height: 630 };
@@ -13,7 +14,7 @@ const heroSrc = `data:image/jpeg;base64,${hero.toString("base64")}`;
 
 /** Imagem de compartilhamento (WhatsApp, Instagram, Facebook) gerada no build. */
 export default async function OpenGraphImage() {
-  const { colors } = siteConfig.theme;
+  const colors = resolveThemeColors(siteConfig);
 
   return new ImageResponse(
     (

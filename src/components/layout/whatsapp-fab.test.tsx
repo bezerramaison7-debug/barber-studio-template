@@ -17,14 +17,14 @@ afterEach(() => {
 describe("WhatsAppFab", () => {
   it("fica oculto e fora da navegação por teclado no topo da página", () => {
     scrollTo(0);
-    render(<WhatsAppFab href="https://wa.me/?text=Oi" />);
+    render(<WhatsAppFab href="https://wa.me/?text=Oi" label="Conversar no WhatsApp (abre em nova aba)" />);
     const link = screen.getByText(/conversar no whatsapp/i).closest("a")!;
     expect(link.hasAttribute("inert")).toBe(true);
     expect(link.className).toContain("opacity-0");
   });
 
   it("aparece depois que a pessoa rola a página", () => {
-    render(<WhatsAppFab href="https://wa.me/?text=Oi" />);
+    render(<WhatsAppFab href="https://wa.me/?text=Oi" label="Conversar no WhatsApp (abre em nova aba)" />);
     scrollTo(window.innerHeight);
     const link = screen.getByText(/conversar no whatsapp/i).closest("a")!;
     expect(link.hasAttribute("inert")).toBe(false);

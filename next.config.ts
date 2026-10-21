@@ -1,4 +1,6 @@
 import type { NextConfig } from "next";
+import { siteConfig } from "./src/config/site.config";
+import { isIndexable } from "./src/lib/indexing";
 
 const securityHeaders = [
   { key: "X-Content-Type-Options", value: "nosniff" },
@@ -26,7 +28,10 @@ const nextConfig: NextConfig = {
     // remotePatterns: [new URL("https://res.cloudinary.com/minha-conta/**")],
   },
   async headers() {
-    return [{ source: "/:path*", headers: securityHeaders }];
+    // Fora da produção de um site real (demo, preview), nenhuma resposta entra no Google,
+    // inclusive imagens e arquivos que não têm meta tag.
+    const noindex = isIndexable(siteConfig.demo) ? [] : [{ key: "X-Robots-Tag", value: "noindex, nofollow" }];
+    return [{ source: "/:path*", headers: [...securityHeaders, ...noindex] }];
   },
 };
 

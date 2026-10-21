@@ -1,6 +1,6 @@
-import type { SiteConfig, ThemeColors } from "@/config/types";
+import type { Service, SiteConfig } from "@/config/types";
 import { toSchemaDay } from "./hours";
-import { buildWhatsAppUrl } from "./whatsapp";
+import { buildWhatsAppUrl, isValidBrazilianWhatsApp, normalizePhone } from "./whatsapp";
 
 /**
  * URL pública, em ordem de prioridade:
@@ -20,16 +20,20 @@ export function getFullAddress(config: SiteConfig): string {
   return `${street}, ${neighborhood}, ${city}/${state}, CEP ${postalCode}`;
 }
 
-export function getWhatsAppUrl(config: SiteConfig, message?: string): string {
-  return buildWhatsAppUrl(config.contact.whatsapp, message ?? config.booking.greeting);
+/**
+ * Número de destino usado nos links de WhatsApp. Vazio (sem destinatário) quando:
+ * - o site está em modo demonstração, mesmo que haja um número no config;
+ * - o número não é um celular/fixo brasileiro válido (ex.: número de exemplo).
+ * Assim nenhuma mensagem de teste chega a um número fictício ou de terceiros.
+ */
+export function getWhatsAppNumber(config: Pick<SiteConfig, "demo" | "contact">): string {
+  if (config.demo) return "";
+  const digits = normalizePhone(config.contact.whatsapp);
+  return isValidBrazilianWhatsApp(digits) ? digits : "";
 }
 
-/** Converte as cores do config em variáveis CSS lidas pelo Tailwind (ver globals.css). */
-export function themeToCssVars(colors: ThemeColors): Record<string, string> {
-  const toKebab = (key: string) => key.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`);
-  return Object.fromEntries(
-    Object.entries(colors).map(([key, value]) => [`--brand-${toKebab(key)}`, value]),
-  );
+export function getWhatsAppUrl(config: SiteConfig, message?: string): string {
+  return buildWhatsAppUrl(getWhatsAppNumber(config), message ?? config.booking.greeting);
 }
 
 /**
@@ -51,7 +55,7 @@ export function buildLocalBusinessJsonLd(config: SiteConfig) {
     url,
     image: `${url}${config.images.hero.src}`,
     priceRange: business.priceRange,
-    ...(contact.whatsapp ? { telephone: `+${contact.whatsapp}` } : {}),
+    ...(getWhatsAppNumber(config) ? { telephone: `+${getWhatsAppNumber(config)}` } : {}),
     ...(contact.email ? { email: contact.email } : {}),
     address: {
       "@type": "PostalAddress",
@@ -88,4 +92,42 @@ export function buildLocalBusinessJsonLd(config: SiteConfig) {
     },
     ...(sameAs.length ? { sameAs } : {}),
   };
+}
+
+export function buildFaqJsonLd(config: Pick<SiteConfig, "faq">) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: config.faq.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  };
+}
+
+/** Página individual de serviço: o serviço oferecido pela barbearia + trilha de navegação. */
+export function buildServicePageJsonLd(config: SiteConfig, service: Service) {
+  const url = getSiteUrl(config);
+  const pageUrl = `${url}/servicos/${service.id}`;
+  return [
+    {
+      "@context": "https://schema.org",
+      "@type": "Service",
+      name: service.name,
+      description: service.page?.summary ?? service.description,
+      url: pageUrl,
+      provider: { "@id": `${url}/#barbearia` },
+      areaServed: config.serviceArea.map((name) => ({ "@type": "City", name })),
+      offers: { "@type": "Offer", priceCurrency: "BRL", price: service.price.toFixed(2) },
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: config.business.name, item: url },
+        { "@type": "ListItem", position: 2, name: service.name, item: pageUrl },
+      ],
+    },
+  ];
 }

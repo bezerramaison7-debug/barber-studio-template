@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
+import type { SiteTexts } from "@/config/texts";
 import type { ImageAsset } from "@/config/types";
 import { ChevronIcon, CloseIcon } from "@/components/ui/icons";
 
@@ -9,7 +10,12 @@ import { ChevronIcon, CloseIcon } from "@/components/ui/icons";
  * Grade de fotos em colunas (respeita a proporção de cada foto) com visualização ampliada.
  * O <dialog> nativo cuida do foco, do Esc e do fundo inerte.
  */
-export function GalleryGrid({ images }: { images: ImageAsset[] }) {
+interface GalleryGridProps {
+  images: ImageAsset[];
+  labels: SiteTexts["gallery"];
+}
+
+export function GalleryGrid({ images, labels }: GalleryGridProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [index, setIndex] = useState<number | null>(null);
 
@@ -53,7 +59,7 @@ export function GalleryGrid({ images }: { images: ImageAsset[] }) {
                 sizes="(min-width: 1024px) 33vw, 50vw"
                 className="h-auto w-full transition-transform duration-500 group-hover:scale-[1.03] motion-reduce:transition-none"
               />
-              <span className="sr-only">Ampliar foto</span>
+              <span className="sr-only">{labels.enlarge}</span>
             </button>
           </li>
         ))}
@@ -61,7 +67,7 @@ export function GalleryGrid({ images }: { images: ImageAsset[] }) {
 
       <dialog
         ref={dialogRef}
-        aria-label="Foto ampliada"
+        aria-label={labels.dialogLabel}
         onClose={() => setIndex(null)}
         onClick={(event) => event.target === event.currentTarget && close()}
         className="m-auto h-full max-h-none w-full max-w-none bg-transparent p-0 text-foreground backdrop:bg-black/90"
@@ -79,7 +85,7 @@ export function GalleryGrid({ images }: { images: ImageAsset[] }) {
                 autoFocus
               >
                 <CloseIcon />
-                <span className="sr-only">Fechar</span>
+                <span className="sr-only">{labels.close}</span>
               </button>
             </div>
 
@@ -95,7 +101,7 @@ export function GalleryGrid({ images }: { images: ImageAsset[] }) {
                 className="inline-flex size-12 items-center justify-center rounded-full border border-line text-xl hover:border-accent hover:text-accent"
               >
                 <ChevronIcon className="rotate-180" />
-                <span className="sr-only">Foto anterior</span>
+                <span className="sr-only">{labels.previous}</span>
               </button>
               <button
                 type="button"
@@ -103,7 +109,7 @@ export function GalleryGrid({ images }: { images: ImageAsset[] }) {
                 className="inline-flex size-12 items-center justify-center rounded-full border border-line text-xl hover:border-accent hover:text-accent"
               >
                 <ChevronIcon />
-                <span className="sr-only">Próxima foto</span>
+                <span className="sr-only">{labels.next}</span>
               </button>
             </div>
           </div>

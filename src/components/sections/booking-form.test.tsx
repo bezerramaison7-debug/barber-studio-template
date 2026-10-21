@@ -1,6 +1,7 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { defaultTexts } from "@/config/texts";
 import { BookingForm, type BookingFormProps } from "./booking-form";
 
 const props: BookingFormProps = {
@@ -10,6 +11,8 @@ const props: BookingFormProps = {
   demo: false,
   services: [{ id: "degrade", name: "Degradê", price: 50, durationMinutes: 45 }],
   professionals: [{ id: "lucas", name: "Lucas" }],
+  labels: defaultTexts.booking,
+  fromLabel: defaultTexts.pricing.fromLabel,
 };
 
 afterEach(() => {
@@ -60,5 +63,20 @@ describe("BookingForm", () => {
 
     const text = new URL(open.mock.calls[0]![0] as string).searchParams.get("text");
     expect(text).toContain("*Profissional:* Sem preferência");
+  });
+
+  it("no modo demo não abre o WhatsApp e mostra a mensagem na tela", async () => {
+    const open = vi.spyOn(window, "open").mockImplementation(() => null);
+    render(<BookingForm {...props} demo whatsapp="5516999990000" />);
+
+    await userEvent.type(screen.getByLabelText(/seu nome/i), "Ana");
+    await userEvent.selectOptions(screen.getByLabelText(/serviço/i), "degrade");
+    await userEvent.click(screen.getByRole("button", { name: /ver mensagem de teste/i }));
+
+    expect(open).not.toHaveBeenCalled();
+    expect(screen.getByText(/demonstração: nada foi enviado/i)).toBeTruthy();
+    const test = screen.getByRole("link", { name: /testar no meu whatsapp/i });
+    // Mesmo com um número recebido por engano, o link de teste não tem destinatário.
+    expect(test.getAttribute("href")).toMatch(/^https:\/\/wa\.me\/\?text=/);
   });
 });

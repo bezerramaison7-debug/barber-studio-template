@@ -1,3 +1,4 @@
+import type { SiteTexts } from "@/config/texts";
 import type { SiteConfig } from "@/config/types";
 import { Container } from "@/components/ui/section";
 import { formatDuration, formatPrice } from "@/lib/format";
@@ -6,7 +7,7 @@ import { formatDuration, formatPrice } from "@/lib/format";
  * Tabela de preços no formato de um quadro clássico de barbearia:
  * nome do serviço, linha pontilhada e valor.
  */
-export function Pricing({ config }: { config: SiteConfig }) {
+export function Pricing({ config, texts }: { config: SiteConfig; texts: SiteTexts }) {
   const groups = config.serviceCategories
     .map((category) => ({
       category,
@@ -23,7 +24,7 @@ export function Pricing({ config }: { config: SiteConfig }) {
               id="precos-titulo"
               className="font-display text-6xl leading-[0.85] font-extrabold tracking-tight uppercase sm:text-8xl"
             >
-              Tabela de preços
+              {texts.pricing.title}
             </h2>
             {config.demo && (
               <p className="max-w-56 text-sm text-ink/70 sm:text-right">
@@ -51,7 +52,7 @@ export function Pricing({ config }: { config: SiteConfig }) {
                           {/* Em telas estreitas, "a partir de" vai para cima do valor para não estourar a moldura. */}
                           {service.priceFrom && (
                             <span className="block font-sans text-xs leading-none font-normal text-ink/70 sm:mr-1 sm:inline sm:text-sm">
-                              a partir de
+                              {texts.pricing.fromLabel}
                             </span>
                           )}
                           {formatPrice(service.price)}

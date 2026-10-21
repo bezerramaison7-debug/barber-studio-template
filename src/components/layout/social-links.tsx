@@ -8,7 +8,13 @@ const NETWORKS = [
 ] as const;
 
 /** Ícones das redes configuradas; redes sem URL não aparecem. */
-export function SocialLinks({ social, className = "" }: { social: SiteConfig["social"]; className?: string }) {
+interface SocialLinksProps {
+  social: SiteConfig["social"];
+  newTabLabel?: string;
+  className?: string;
+}
+
+export function SocialLinks({ social, newTabLabel = "abre em nova aba", className = "" }: SocialLinksProps) {
   const available = NETWORKS.filter(({ key }) => social[key]);
   if (available.length === 0) return null;
 
@@ -23,7 +29,7 @@ export function SocialLinks({ social, className = "" }: { social: SiteConfig["so
             className="inline-flex size-11 items-center justify-center rounded-full border border-line text-xl transition-colors hover:border-accent hover:text-accent"
           >
             <Icon />
-            <span className="sr-only">{label} (abre em nova aba)</span>
+            <span className="sr-only">{`${label} (${newTabLabel})`}</span>
           </a>
         </li>
       ))}

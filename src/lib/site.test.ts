@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { siteConfig } from "@/config/site.config";
-import { buildLocalBusinessJsonLd, getSiteUrl, themeToCssVars } from "./site";
+import { makeRealConfig } from "@/test/fixtures";
+import { buildLocalBusinessJsonLd, getSiteUrl, getWhatsAppNumber, getWhatsAppUrl } from "./site";
 
 afterEach(() => vi.unstubAllEnvs());
 
@@ -23,11 +24,21 @@ describe("getSiteUrl", () => {
   });
 });
 
-describe("themeToCssVars", () => {
-  it("gera variáveis --brand-* em kebab-case", () => {
-    const vars = themeToCssVars(siteConfig.theme.colors);
-    expect(vars["--brand-accent"]).toBe(siteConfig.theme.colors.accent);
-    expect(vars["--brand-surface-raised"]).toBe(siteConfig.theme.colors.surfaceRaised);
+describe("getWhatsAppNumber / getWhatsAppUrl", () => {
+  it("em modo demo nunca usa número, mesmo que haja um no config", () => {
+    const config = { ...siteConfig, contact: { ...siteConfig.contact, whatsapp: "5516991234567" } };
+    expect(getWhatsAppNumber(config)).toBe("");
+    expect(getWhatsAppUrl(config)).toMatch(/^https:\/\/wa\.me\/\?text=/);
+  });
+
+  it("em site real usa o número válido", () => {
+    expect(getWhatsAppUrl(makeRealConfig())).toMatch(/^https:\/\/wa\.me\/5516991234567\?text=/);
+  });
+
+  it("em site real descarta número fictício ou inválido", () => {
+    const real = makeRealConfig();
+    expect(getWhatsAppNumber({ ...real, contact: { ...real.contact, whatsapp: "5516999999999" } })).toBe("");
+    expect(getWhatsAppNumber({ ...real, contact: { ...real.contact, whatsapp: "123" } })).toBe("");
   });
 });
 
@@ -47,11 +58,8 @@ describe("buildLocalBusinessJsonLd", () => {
     expect(jsonLd).not.toHaveProperty("review");
   });
 
-  it("omite o telefone quando não há WhatsApp configurado", () => {
-    const withoutPhone = buildLocalBusinessJsonLd({
-      ...siteConfig,
-      contact: { ...siteConfig.contact, whatsapp: "" },
-    });
-    expect(withoutPhone).not.toHaveProperty("telephone");
+  it("só publica telefone em site real com número válido", () => {
+    expect(jsonLd).not.toHaveProperty("telephone");
+    expect(buildLocalBusinessJsonLd(makeRealConfig())).toHaveProperty("telephone", "+5516991234567");
   });
 });

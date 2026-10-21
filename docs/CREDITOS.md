@@ -32,9 +32,13 @@ foto no Unsplash por busca reversa de imagem.
 
 - Todas as fotos vieram de endereços `images.unsplash.com/photo-…`, o formato das fotos gratuitas
   (as do plano pago Unsplash+ usam `premium_photo-…`).
-- **Não foi possível confirmar a licença foto a foto**: a API do Unsplash exige chave de acesso e
-  as páginas individuais não foram localizadas por busca. Antes de uso comercial amplo, abra cada
-  foto no Unsplash e confirme que ela é gratuita e não foi removida.
+- **Não foi possível confirmar a licença foto a foto**: a API do Unsplash exige chave de acesso, as
+  páginas individuais não foram localizadas por busca e o site do Unsplash bloqueia navegadores
+  automatizados com uma verificação anti-robôs (nova tentativa na auditoria V2, sem contornar a
+  proteção). Antes de usar a demo em material de venda, abra cada foto no Unsplash, num navegador
+  comum, e confirme que ela é gratuita e não foi removida.
+- O config registra essa situação em `imageRights.status: "ilustrativas-demo"`. Um site real só é
+  publicado com `status: "confirmados"` (o build recusa o contrário).
 
 ## Pontos de atenção para uso comercial
 

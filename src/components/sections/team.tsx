@@ -1,31 +1,32 @@
 import Image from "next/image";
+import type { SiteTexts } from "@/config/texts";
 import type { SiteConfig } from "@/config/types";
 import { Section } from "@/components/ui/section";
 import { InstagramIcon } from "@/components/ui/icons";
 import { initials } from "@/lib/format";
 
-export function Team({ config }: { config: SiteConfig }) {
+export function Team({ config, texts }: { config: SiteConfig; texts: SiteTexts }) {
   return (
     <Section
       id="equipe"
       tone="graphite"
-      title="Equipe"
+      title={texts.team.title}
       intro={
         config.demo
           ? "Perfis fictícios, para mostrar como a equipe aparece no site. Na versão final entram os profissionais reais."
-          : "Quem vai cuidar do seu corte."
+          : texts.team.intro
       }
     >
-      <ul className="grid gap-6 md:grid-cols-3">
+      <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {config.team.map((member) => (
           <li key={member.id} className="flex flex-col border border-line bg-background">
-            <div className="relative aspect-4/3 overflow-hidden bg-surface-raised md:aspect-4/5">
+            <div className="relative aspect-4/3 overflow-hidden bg-surface-raised lg:aspect-4/5">
               {member.photo ? (
                 <Image
                   src={member.photo.src}
                   alt={member.photo.alt}
                   fill
-                  sizes="(min-width: 768px) 33vw, 100vw"
+                  sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                   className="object-cover"
                 />
               ) : (
@@ -61,7 +62,7 @@ export function Team({ config }: { config: SiteConfig }) {
                   className="mt-6 inline-flex items-center gap-2 self-start text-sm hover:text-accent"
                 >
                   <InstagramIcon /> Instagram de {member.name}
-                  <span className="sr-only"> (abre em nova aba)</span>
+                  <span className="sr-only"> ({texts.newTab})</span>
                 </a>
               )}
             </div>

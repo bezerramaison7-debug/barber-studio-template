@@ -1,17 +1,18 @@
 import Link from "next/link";
 import Image from "next/image";
+import type { SiteTexts } from "@/config/texts";
 import type { SiteConfig } from "@/config/types";
 import { buttonClasses } from "@/components/ui/button";
 import { ClockIcon, MapPinIcon } from "@/components/ui/icons";
 import { Container } from "@/components/ui/section";
-import { BOOKING_HREF } from "@/components/layout/nav-links";
+import { BOOKING_HREF } from "@/lib/navigation";
 import { OpenStatus } from "./open-status";
 
-export function Hero({ config }: { config: SiteConfig }) {
+export function Hero({ config, texts }: { config: SiteConfig; texts: SiteTexts }) {
   const { business, images, address } = config;
 
   return (
-    <section id="inicio" aria-labelledby="inicio-titulo" className="relative isolate flex min-h-[100svh] flex-col overflow-hidden">
+    <section id="inicio" aria-labelledby="inicio-titulo" className="relative isolate flex min-h-[100svh] flex-col overflow-hidden md:max-lg:min-h-[min(100svh,52rem)]">
       <Image
         src={images.hero.src}
         alt={images.hero.alt}
@@ -40,10 +41,10 @@ export function Hero({ config }: { config: SiteConfig }) {
 
         <div className="animate-rise mt-10 flex flex-col gap-3 [animation-delay:300ms] sm:flex-row sm:gap-4">
           <Link href={BOOKING_HREF} className={buttonClasses("primary")}>
-            Agendar horário
+            {texts.hero.primaryCta}
           </Link>
           <Link href="/#precos" className={buttonClasses("outline")}>
-            Ver preços
+            {texts.hero.secondaryCta}
           </Link>
         </div>
 
@@ -51,7 +52,7 @@ export function Hero({ config }: { config: SiteConfig }) {
           <div className="flex items-center gap-3">
             <dt>
               <ClockIcon className="text-lg text-accent" />
-              <span className="sr-only">Funcionamento</span>
+              <span className="sr-only">{texts.hero.hoursLabel}</span>
             </dt>
             <dd className="min-h-6">
               <OpenStatus hours={config.hours} timeZone={config.timeZone} />
@@ -60,7 +61,7 @@ export function Hero({ config }: { config: SiteConfig }) {
           <div className="flex items-center gap-3">
             <dt>
               <MapPinIcon className="text-lg text-accent" />
-              <span className="sr-only">Endereço</span>
+              <span className="sr-only">{texts.hero.addressLabel}</span>
             </dt>
             <dd>
               {address.street}, {address.neighborhood}, {address.city}/{address.state}

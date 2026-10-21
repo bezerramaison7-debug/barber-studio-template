@@ -4,14 +4,17 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { buttonClasses } from "@/components/ui/button";
 import { CloseIcon, MenuIcon } from "@/components/ui/icons";
-import { BOOKING_HREF, NAV_LINKS } from "./nav-links";
+import type { NavLink } from "@/lib/navigation";
 
 interface SiteHeaderProps {
   name: string;
   demo: boolean;
+  links: NavLink[];
+  bookingHref: string;
+  labels: { booking: string; menuOpen: string; menuClose: string };
 }
 
-export function SiteHeader({ name, demo }: SiteHeaderProps) {
+export function SiteHeader({ name, demo, links, bookingHref, labels }: SiteHeaderProps) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -55,10 +58,13 @@ export function SiteHeader({ name, demo }: SiteHeaderProps) {
         </Link>
 
         <nav aria-label="Principal" className="hidden lg:block">
-          <ul className="flex items-center gap-8 text-[0.95rem]">
-            {NAV_LINKS.map((link) => (
+          <ul className="flex items-center gap-7 text-[0.95rem]">
+            {links.map((link) => (
               <li key={link.href}>
-                <Link href={link.href} className="text-foreground/80 transition-colors hover:text-accent">
+                <Link
+                  href={link.href}
+                  className="inline-flex min-h-11 items-center text-foreground/80 transition-colors hover:text-accent"
+                >
                   {link.label}
                 </Link>
               </li>
@@ -67,8 +73,8 @@ export function SiteHeader({ name, demo }: SiteHeaderProps) {
         </nav>
 
         <div className="flex items-center gap-3">
-          <Link href={BOOKING_HREF} className={buttonClasses("primary", "min-h-11 px-5 max-sm:hidden")}>
-            Agendar horário
+          <Link href={bookingHref} className={buttonClasses("primary", "min-h-11 px-5 max-sm:hidden")}>
+            {labels.booking}
           </Link>
           <button
             type="button"
@@ -78,7 +84,7 @@ export function SiteHeader({ name, demo }: SiteHeaderProps) {
             onClick={() => setMenuOpen((open) => !open)}
           >
             {menuOpen ? <CloseIcon /> : <MenuIcon />}
-            <span className="sr-only">{menuOpen ? "Fechar menu" : "Abrir menu"}</span>
+            <span className="sr-only">{menuOpen ? labels.menuClose : labels.menuOpen}</span>
           </button>
         </div>
       </div>
@@ -90,7 +96,7 @@ export function SiteHeader({ name, demo }: SiteHeaderProps) {
         className="h-[calc(100dvh-var(--header-height))] overflow-y-auto border-t border-line bg-background px-5 pb-10 lg:hidden"
       >
         <ul className="divide-y divide-line">
-          {NAV_LINKS.map((link) => (
+          {links.map((link) => (
             <li key={link.href}>
               <Link
                 href={link.href}
@@ -103,11 +109,11 @@ export function SiteHeader({ name, demo }: SiteHeaderProps) {
           ))}
         </ul>
         <Link
-          href={BOOKING_HREF}
+          href={bookingHref}
           onClick={() => setMenuOpen(false)}
           className={buttonClasses("primary", "mt-8 w-full")}
         >
-          Agendar horário
+          {labels.booking}
         </Link>
       </nav>
     </header>

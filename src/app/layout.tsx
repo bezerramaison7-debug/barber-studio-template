@@ -5,7 +5,12 @@ import { siteConfig } from "@/config/site.config";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { WhatsAppFab } from "@/components/layout/whatsapp-fab";
-import { getSiteUrl, getWhatsAppUrl, themeToCssVars } from "@/lib/site";
+import { isIndexable } from "@/lib/indexing";
+import { BOOKING_HREF, getNavLinks } from "@/lib/navigation";
+import { getSiteUrl, getWhatsAppUrl } from "@/lib/site";
+import { getTexts } from "@/lib/texts";
+import { resolveThemeColors, themeToCssVars } from "@/lib/theme";
+import { assertValidSiteConfig } from "@/lib/validate-config";
 import "./globals.css";
 
 // Display condensado, no espírito dos letreiros de barbearia.
@@ -25,7 +30,13 @@ const body = Instrument_Sans({
   display: "swap",
 });
 
+// Um config com erro (ex.: WhatsApp inválido em site real) interrompe o build aqui.
+assertValidSiteConfig(siteConfig);
+
 const siteUrl = getSiteUrl(siteConfig);
+const texts = getTexts(siteConfig);
+const colors = resolveThemeColors(siteConfig);
+const indexable = isIndexable(siteConfig.demo);
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -43,13 +54,13 @@ export const metadata: Metadata = {
     description: siteConfig.seo.description,
   },
   twitter: { card: "summary_large_image" },
-  // Conteúdo fictício não deve ser indexado pelo Google.
-  robots: siteConfig.demo ? { index: false, follow: false } : { index: true, follow: true },
+  // Demonstração e previews não entram no Google; a produção de um site real entra.
+  robots: indexable ? { index: true, follow: true } : { index: false, follow: false },
   formatDetection: { telephone: false },
 };
 
 export const viewport: Viewport = {
-  themeColor: siteConfig.theme.colors.background,
+  themeColor: colors.background,
   colorScheme: "dark",
 };
 
@@ -58,21 +69,27 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html
       lang="pt-BR"
       className={`${display.variable} ${body.variable} antialiased`}
-      style={themeToCssVars(siteConfig.theme.colors) as CSSProperties}
+      style={themeToCssVars(colors) as CSSProperties}
     >
       <body className="flex min-h-dvh flex-col">
         <a
           href="#conteudo"
           className="sr-only z-50 bg-accent px-4 py-3 font-semibold text-accent-foreground focus:not-sr-only focus:fixed focus:top-2 focus:left-2"
         >
-          Pular para o conteúdo
+          {texts.nav.skipToContent}
         </a>
-        <SiteHeader name={siteConfig.business.name} demo={siteConfig.demo} />
+        <SiteHeader
+          name={siteConfig.business.name}
+          demo={siteConfig.demo}
+          links={getNavLinks(siteConfig, texts)}
+          bookingHref={BOOKING_HREF}
+          labels={{ booking: texts.nav.booking, menuOpen: texts.nav.menuOpen, menuClose: texts.nav.menuClose }}
+        />
         <main id="conteudo" className="flex-1">
           {children}
         </main>
-        <SiteFooter config={siteConfig} />
-        <WhatsAppFab href={getWhatsAppUrl(siteConfig)} />
+        <SiteFooter config={siteConfig} texts={texts} links={getNavLinks(siteConfig, texts)} />
+        <WhatsAppFab href={getWhatsAppUrl(siteConfig)} label={`${texts.whatsappFab} (${texts.newTab})`} />
       </body>
     </html>
   );

@@ -15,14 +15,19 @@ textos: português do Brasil.
 ## Arquitetura
 
 - `src/config/site.config.ts` é a **única fonte de dados do cliente**. Componentes recebem
-  `config: SiteConfig` por props; não espalhe dados de cliente em componentes.
-  Campo novo → adicione em `src/config/types.ts` (com comentário), no config e, se fizer sentido,
-  em `src/config/site.config.test.ts`.
-- `src/lib/` contém lógica pura com testes ao lado (`*.test.ts`): WhatsApp, horários, formatação,
-  JSON-LD, tema. Lógica nova vai para `lib/` com teste, não para dentro de componentes.
+  `config: SiteConfig` (e `texts: SiteTexts`) por props; não espalhe dados de cliente em componentes.
+  Campo novo → `src/config/types.ts` (com comentário), o config e, se tiver regra, `src/lib/validate-config.ts`.
+- **Textos de interface** ficam em `src/config/texts.ts` e são lidos com `getTexts(config)`; nunca
+  escreva título, botão ou rótulo direto no componente. Exceção: avisos que só existem com `demo: true`.
+- **Planos**: `getFeatures(config)` em `src/lib/plan.ts` decide o que aparece (essencial × premium).
+  Recurso novo de um plano → nova flag em `Features`, nunca um segundo projeto ou cópia de componente.
+- **Validação**: `validateSiteConfig` roda no build (`layout.tsx`) e nos testes. Regra de negócio sobre o
+  config (o que é obrigatório para site real) vai lá, com teste em `validate-config.test.ts`.
+- `src/lib/` contém lógica pura com testes ao lado (`*.test.ts`). Lógica nova vai para `lib/` com teste.
 - `src/components/sections/` = uma seção da home por arquivo; `ui/` = primitivas; `layout/` = casca.
-- Página única com âncoras (`#servicos`, `#precos`, `#equipe`, `#galeria`, `#agendar`, `#contato`),
-  definidas em `components/layout/nav-links.ts`.
+- Âncoras da home (`#servicos`, `#precos`, `#equipe`, `#galeria`, `#agendar`, `#duvidas`, `#contato`) e
+  o menu por plano: `src/lib/navigation.ts`. Páginas de serviço: `src/app/servicos/[slug]`, com 404
+  real via `src/proxy.ts`.
 
 ## Regras do Next.js desta versão
 
@@ -32,6 +37,9 @@ textos: português do Brasil.
 - Lint do React Compiler proíbe `setState` síncrono dentro de `useEffect`.
 - `images.qualities` é obrigatório no `next.config.ts`; imagens remotas precisam de `remotePatterns`.
 - Links internos com `next/link`.
+- `generateStaticParams` não pode devolver lista vazia; `dynamicParams` não existe com Cache Components.
+  `notFound()` depois do streaming responde 200: para 404 real use o `proxy`.
+- Tipos globais `PageProps`/`LayoutProps` só existem após o build; o `typecheck` roda antes. Use tipos explícitos.
 - Consulte `node_modules/next/dist/docs/` antes de usar APIs que você não conhece desta versão.
 
 ## Estilo
@@ -43,12 +51,19 @@ textos: português do Brasil.
 - Dourado (`accent`) com moderação. Movimento apenas na entrada do hero; respeite `motion-reduce`.
 - Acessibilidade obrigatória: `alt` descritivo, rótulos em campos, foco visível, alvos de toque ≥ 44px.
 
-## Conteúdo e ética
+## WhatsApp, indexação e conteúdo
 
-- Nunca invente avaliações, depoimentos, notas, prêmios ou dados de pessoas reais.
+- Todo link de WhatsApp/telefone passa por `getWhatsAppNumber` (vazio em demo e para número inválido).
+  Nunca use `config.contact.whatsapp` diretamente num link.
+- Indexação só por `isIndexable` (`src/lib/indexing.ts`). Não use `Disallow: /` no robots para esconder
+  páginas: o bloqueio é por `noindex` (meta + `X-Robots-Tag`).
+- Nunca invente avaliações, depoimentos, notas, prêmios ou dados de pessoas reais. Textos descrevem o que
+  existe; sem promessas de resultado, tempo de espera ou superioridade (o build avisa em `RISKY_CLAIMS`).
 - Enquanto `demo: true`, mantenha os avisos de conteúdo fictício e o `noindex`.
 - Não adicione `aggregateRating`/`review` ao JSON-LD sem avaliações reais verificáveis.
-- O formulário não envia dados a servidor; mantenha assim (LGPD) salvo pedido explícito.
+- O formulário não envia dados a servidor; mantenha assim (LGPD) salvo pedido explícito. A política em
+  `src/app/privacidade/page.tsx` descreve o comportamento real: cookie, analytics ou formulário com
+  backend novos exigem reescrevê-la.
 
 ## Dependências
 

@@ -4,11 +4,18 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { MapPinIcon } from "@/components/ui/icons";
 
+interface MapEmbedProps {
+  src: string;
+  title: string;
+  notice: string;
+  buttonLabel: string;
+}
+
 /**
- * O mapa do Google só carrega quando a pessoa pede.
- * Economiza ~1 MB na abertura da página e evita cookies de terceiros sem consentimento.
+ * O mapa do Google só carrega quando a pessoa pede. Antes do clique o site não contata
+ * nenhum domínio de terceiros; depois, o iframe acessa serviços do Google (Maps e fontes).
  */
-export function MapEmbed({ src, title }: { src: string; title: string }) {
+export function MapEmbed({ src, title, notice, buttonLabel }: MapEmbedProps) {
   const [loaded, setLoaded] = useState(false);
 
   return (
@@ -25,9 +32,9 @@ export function MapEmbed({ src, title }: { src: string; title: string }) {
       ) : (
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-5 p-6 text-center">
           <MapPinIcon className="text-5xl text-accent" />
-          <p className="max-w-xs text-muted">O mapa é carregado do Google Maps somente se você quiser.</p>
+          <p className="max-w-xs text-muted">{notice}</p>
           <Button variant="outline" onClick={() => setLoaded(true)}>
-            Mostrar mapa
+            {buttonLabel}
           </Button>
         </div>
       )}
