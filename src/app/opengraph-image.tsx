@@ -7,10 +7,12 @@ export const alt = siteConfig.seo.title;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
+// Lida no topo do módulo para a imagem ser gerada uma única vez, no build.
+const hero = await readFile(join(process.cwd(), "public", siteConfig.images.hero.src));
+const heroSrc = `data:image/jpeg;base64,${hero.toString("base64")}`;
+
 /** Imagem de compartilhamento (WhatsApp, Instagram, Facebook) gerada no build. */
 export default async function OpenGraphImage() {
-  const hero = await readFile(join(process.cwd(), "public", siteConfig.images.hero.src));
-  const heroSrc = `data:image/jpeg;base64,${hero.toString("base64")}`;
   const { colors } = siteConfig.theme;
 
   return new ImageResponse(

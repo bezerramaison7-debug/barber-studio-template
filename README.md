@@ -71,7 +71,9 @@ O projeto já está pronto para a Vercel (detecção automática de Next.js, sem
 
 1. Em [vercel.com/new](https://vercel.com/new), importe este repositório do GitHub.
 2. Em **Environment Variables**, defina `NEXT_PUBLIC_SITE_URL` com o domínio final
-   (ex.: `https://www.barbeariadocliente.com.br`). Veja `.env.example`.
+   (ex.: `https://www.barbeariadocliente.com.br`). Veja `.env.example`. Enquanto o site usar o
+   endereço `*.vercel.app`, a variável é opcional: o código usa o domínio de produção que a
+   Vercel informa automaticamente.
 3. Clique em **Deploy**. Cada push na branch principal gera um novo deploy; cada pull request
    ganha uma URL de pré-visualização.
 4. Para um domínio próprio: **Settings → Domains**.

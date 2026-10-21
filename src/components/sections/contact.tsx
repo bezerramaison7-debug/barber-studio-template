@@ -72,7 +72,7 @@ export function Contact({ config }: { config: SiteConfig }) {
               {contact.email && (
                 <li className="flex items-center gap-3">
                   <MailIcon className="text-accent" />
-                  <a href={`mailto:${contact.email}`} className="hover:text-accent">
+                  <a href={`mailto:${contact.email}`} className="inline-flex min-h-11 items-center hover:text-accent">
                     {contact.email}
                   </a>
                 </li>

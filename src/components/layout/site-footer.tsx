@@ -17,16 +17,16 @@ export function SiteFooter({ config }: { config: SiteConfig }) {
 
         <nav aria-label="Rodapé">
           <p className="font-semibold">Navegação</p>
-          <ul className="mt-4 space-y-2 text-muted">
+          <ul className="mt-2 text-muted">
             {NAV_LINKS.map((link) => (
               <li key={link.href}>
-                <Link href={link.href} className="hover:text-accent">
+                <Link href={link.href} className="inline-flex min-h-11 items-center hover:text-accent">
                   {link.label}
                 </Link>
               </li>
             ))}
             <li>
-              <Link href="/privacidade" className="hover:text-accent">
+              <Link href="/privacidade" className="inline-flex min-h-11 items-center hover:text-accent">
                 Privacidade
               </Link>
             </li>

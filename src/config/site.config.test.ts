@@ -46,6 +46,13 @@ describe("site.config", () => {
     if (whatsapp) expect(whatsapp).toMatch(/^55\d{10,11}$/);
   });
 
+  it("em modo demonstração, não envia nada para números ou e-mails reais", () => {
+    if (!siteConfig.demo) return;
+    // Sem número, o WhatsApp abre sem destinatário. Para testar um número real, use demo: false.
+    expect(siteConfig.contact.whatsapp).toBe("");
+    if (siteConfig.contact.email) expect(siteConfig.contact.email).toMatch(/@example\.(com|org|net)$/);
+  });
+
   it("cores são hexadecimais", () => {
     for (const [name, value] of Object.entries(siteConfig.theme.colors)) {
       expect(value, name).toMatch(/^#[0-9a-f]{6}$/i);

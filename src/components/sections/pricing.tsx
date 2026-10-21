@@ -17,7 +17,7 @@ export function Pricing({ config }: { config: SiteConfig }) {
   return (
     <section id="precos" aria-labelledby="precos-titulo" className="bg-paper py-20 text-ink sm:py-28">
       <Container>
-        <div className="border-4 border-double border-ink/80 p-6 sm:p-12 lg:p-16">
+        <div className="border-4 border-double border-ink/80 p-5 sm:p-12 lg:p-16">
           <header className="flex flex-col gap-4 border-b border-ink/20 pb-8 sm:flex-row sm:items-end sm:justify-between">
             <h2
               id="precos-titulo"
@@ -47,9 +47,12 @@ export function Pricing({ config }: { config: SiteConfig }) {
                       <p className="flex items-baseline gap-3 text-lg font-semibold sm:text-xl">
                         <span>{service.name}</span>
                         <span aria-hidden="true" className="price-leader" />
-                        <span className="shrink-0 font-display text-2xl font-extrabold tabular-nums">
+                        <span className="shrink-0 text-right font-display text-2xl font-extrabold tabular-nums">
+                          {/* Em telas estreitas, "a partir de" vai para cima do valor para não estourar a moldura. */}
                           {service.priceFrom && (
-                            <span className="mr-1 font-sans text-sm font-normal text-ink/70">a partir de</span>
+                            <span className="block font-sans text-xs leading-none font-normal text-ink/70 sm:mr-1 sm:inline sm:text-sm">
+                              a partir de
+                            </span>
                           )}
                           {formatPrice(service.price)}
                         </span>

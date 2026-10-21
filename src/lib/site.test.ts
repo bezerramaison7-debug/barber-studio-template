@@ -10,8 +10,15 @@ describe("getSiteUrl", () => {
     expect(getSiteUrl(siteConfig)).toBe("https://cliente.com.br");
   });
 
-  it("usa a URL do config quando a variável não existe", () => {
+  it("na Vercel, sem a variável, usa o domínio de produção do projeto", () => {
     vi.stubEnv("NEXT_PUBLIC_SITE_URL", "");
+    vi.stubEnv("VERCEL_PROJECT_PRODUCTION_URL", "barber-studio-template.vercel.app");
+    expect(getSiteUrl(siteConfig)).toBe("https://barber-studio-template.vercel.app");
+  });
+
+  it("fora da Vercel e sem a variável, usa a URL do config", () => {
+    vi.stubEnv("NEXT_PUBLIC_SITE_URL", "");
+    vi.stubEnv("VERCEL_PROJECT_PRODUCTION_URL", "");
     expect(getSiteUrl(siteConfig)).toBe(siteConfig.url);
   });
 });

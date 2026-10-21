@@ -2,10 +2,17 @@ import type { SiteConfig, ThemeColors } from "@/config/types";
 import { toSchemaDay } from "./hours";
 import { buildWhatsAppUrl } from "./whatsapp";
 
-/** URL pública: variável de ambiente (Vercel) tem prioridade sobre o config. */
+/**
+ * URL pública, em ordem de prioridade:
+ * 1. NEXT_PUBLIC_SITE_URL (definida por nós na Vercel);
+ * 2. VERCEL_PROJECT_PRODUCTION_URL (injetada pela própria Vercel, sem "https://");
+ * 3. `url` do config.
+ */
 export function getSiteUrl(config: SiteConfig): string {
-  const fromEnv = process.env.NEXT_PUBLIC_SITE_URL?.trim();
-  return (fromEnv || config.url).replace(/\/+$/, "");
+  const explicit = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+  const vercel = process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim();
+  const url = explicit || (vercel ? `https://${vercel}` : config.url);
+  return url.replace(/\/+$/, "");
 }
 
 export function getFullAddress(config: SiteConfig): string {

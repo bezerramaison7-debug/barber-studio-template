@@ -28,6 +28,26 @@ Os endereços acima são os da CDN do Unsplash, de onde os arquivos foram baixad
 cada fotógrafo não foi registrado (a licença não exige atribuição); se quiser creditar, localize a
 foto no Unsplash por busca reversa de imagem.
 
+## Situação da verificação (revisão de 21/10/2026)
+
+- Todas as fotos vieram de endereços `images.unsplash.com/photo-…`, o formato das fotos gratuitas
+  (as do plano pago Unsplash+ usam `premium_photo-…`).
+- **Não foi possível confirmar a licença foto a foto**: a API do Unsplash exige chave de acesso e
+  as páginas individuais não foram localizadas por busca. Antes de uso comercial amplo, abra cada
+  foto no Unsplash e confirme que ela é gratuita e não foi removida.
+
+## Pontos de atenção para uso comercial
+
+A Licença Unsplash cobre os direitos autorais da foto, mas **não** cobre marcas que aparecem nela
+nem o direito de imagem das pessoas fotografadas (o Unsplash não garante autorizações de modelo).
+
+- **Marcas visíveis:** `galeria-03.jpg` (logotipos em máquinas e pomadas) e `galeria-04.jpg`
+  (marca impressa no pente). Recomenda-se trocar antes de usar a demo em material de venda.
+- **Rostos identificáveis:** `galeria-01`, `04`, `05`, `07`, `08`, `10` e o topo (`hero.jpg`).
+  Aceitável como ilustração identificada; não use essas pessoas como se fossem clientes ou
+  profissionais da barbearia.
+- Em sites de clientes reais, use somente fotos próprias, com autorização de uso de imagem.
+
 Fontes: [Big Shoulders](https://fonts.google.com/specimen/Big+Shoulders) e
 [Instrument Sans](https://fonts.google.com/specimen/Instrument+Sans), ambas sob a SIL Open Font
 License, servidas pelo próprio site via `next/font`.

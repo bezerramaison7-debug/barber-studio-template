@@ -41,7 +41,8 @@ export const siteConfig: SiteConfig = {
     ],
   },
 
-  url: "https://barber-studio-demo.vercel.app",
+  // Domínio reservado para exemplos. Troque pelo domínio do cliente (ou defina NEXT_PUBLIC_SITE_URL).
+  url: "https://example.com",
 
   theme: {
     colors: {
@@ -62,7 +63,7 @@ export const siteConfig: SiteConfig = {
     // Demonstração: vazio de propósito. Coloque o número real do cliente, só dígitos.
     whatsapp: "",
     phoneDisplay: "(16) 90000-0000 · fictício",
-    email: "contato@exemplo.com.br",
+    email: "contato@example.com", // domínio reservado para exemplos (RFC 2606): nunca entrega e-mail
   },
 
   address: {

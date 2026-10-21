@@ -107,7 +107,7 @@ export interface SiteConfig {
     highlights: { title: string; text: string }[];
   };
 
-  /** URL pública final, sem barra no fim. Pode ser sobrescrita por NEXT_PUBLIC_SITE_URL. */
+  /** URL pública final, sem barra no fim. NEXT_PUBLIC_SITE_URL e, na Vercel, o domínio de produção do projeto têm prioridade. */
   url: string;
 
   theme: { colors: ThemeColors };
