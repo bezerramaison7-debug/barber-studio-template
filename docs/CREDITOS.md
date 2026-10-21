@@ -15,8 +15,8 @@ de uso de imagem das pessoas que aparecem.
 | `public/images/cadeira.jpg`           | https://images.unsplash.com/photo-1512690459411-b9245aed614b             |
 | `public/images/gallery/galeria-01.jpg` | https://images.unsplash.com/photo-1517832606299-7ae9b720a186            |
 | `public/images/gallery/galeria-02.jpg` | https://images.unsplash.com/photo-1593702275687-f8b402bf1fb5            |
-| `public/images/gallery/galeria-03.jpg` | https://images.unsplash.com/photo-1621605815971-fbc98d665033            |
-| `public/images/gallery/galeria-04.jpg` | https://images.unsplash.com/photo-1599351431202-1e0f0137899a            |
+| `public/images/gallery/galeria-03.jpg` | https://images.unsplash.com/photo-1493256338651-d82f7acb2b38 (etiqueta da capa retocada) |
+| `public/images/gallery/galeria-04.jpg` | https://images.unsplash.com/photo-1592647420148-bfcc177e2117            |
 | `public/images/gallery/galeria-05.jpg` | https://images.unsplash.com/photo-1532710093739-9470acff878f            |
 | `public/images/gallery/galeria-06.jpg` | https://images.unsplash.com/photo-1622286342621-4bd786c2447c            |
 | `public/images/gallery/galeria-07.jpg` | https://images.unsplash.com/photo-1596728325488-58c87691e9af            |
@@ -41,9 +41,10 @@ foto no Unsplash por busca reversa de imagem.
 A Licença Unsplash cobre os direitos autorais da foto, mas **não** cobre marcas que aparecem nela
 nem o direito de imagem das pessoas fotografadas (o Unsplash não garante autorizações de modelo).
 
-- **Marcas visíveis:** `galeria-03.jpg` (logotipos em máquinas e pomadas) e `galeria-04.jpg`
-  (marca impressa no pente). Recomenda-se trocar antes de usar a demo em material de venda.
-- **Rostos identificáveis:** `galeria-01`, `04`, `05`, `07`, `08`, `10` e o topo (`hero.jpg`).
+- **Marcas visíveis:** as duas fotos que mostravam marcas (logotipos em máquinas e pomadas; marca
+  no pente) foram substituídas em `galeria-03` e `galeria-04`. Na nova `galeria-03`, a etiqueta
+  impressa da capa foi coberta por retoque, como a licença permite (modificar as fotos).
+- **Rostos identificáveis:** `galeria-01`, `05`, `07`, `08`, `10` e o topo (`hero.jpg`).
   Aceitável como ilustração identificada; não use essas pessoas como se fossem clientes ou
   profissionais da barbearia.
 - Em sites de clientes reais, use somente fotos próprias, com autorização de uso de imagem.

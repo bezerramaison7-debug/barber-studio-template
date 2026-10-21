@@ -252,15 +252,15 @@ export const siteConfig: SiteConfig = {
     },
     {
       src: "/images/gallery/galeria-03.jpg",
-      alt: "Máquinas, tesoura, pente e pomadas sobre uma bancada de madeira",
+      alt: "Acabamento com máquina na nuca de um cliente de costas, barbeiro com braços tatuados",
       width: 1200,
       height: 800,
     },
     {
       src: "/images/gallery/galeria-04.jpg",
-      alt: "Acabamento na nuca com máquina, cliente com tatuagens e barba cheia",
+      alt: "Cadeira de barbeiro vermelha em salão de madeira escura com quadros antigos na parede",
       width: 1200,
-      height: 1798,
+      height: 830,
     },
     {
       src: "/images/gallery/galeria-05.jpg",
