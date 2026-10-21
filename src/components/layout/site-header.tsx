@@ -1,0 +1,115 @@
+"use client";
+
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { buttonClasses } from "@/components/ui/button";
+import { CloseIcon, MenuIcon } from "@/components/ui/icons";
+import { BOOKING_HREF, NAV_LINKS } from "./nav-links";
+
+interface SiteHeaderProps {
+  name: string;
+  demo: boolean;
+}
+
+export function SiteHeader({ name, demo }: SiteHeaderProps) {
+  const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Menu móvel: Esc fecha e a página de fundo não rola enquanto ele está aberto.
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (event: KeyboardEvent) => event.key === "Escape" && setMenuOpen(false);
+    document.addEventListener("keydown", onKey);
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
+    };
+  }, [menuOpen]);
+
+  const solid = scrolled || menuOpen;
+
+  return (
+    <header
+      className={`fixed inset-x-0 top-0 z-40 transition-colors duration-300 ${
+        solid ? "border-b border-line bg-background/95 backdrop-blur" : "bg-transparent"
+      }`}
+    >
+      {demo && (
+        <p className="bg-accent px-4 py-1.5 text-center text-xs font-semibold text-accent-foreground">
+          Site demonstrativo<span className="max-sm:hidden">: nomes, preços, endereço e contatos são fictícios</span>
+          <span className="sm:hidden"> com dados fictícios</span>.
+        </p>
+      )}
+
+      <div className="mx-auto flex h-(--header-height) w-full max-w-6xl items-center justify-between gap-6 px-5 sm:px-8">
+        <Link href="/#inicio" className="font-display text-2xl font-extrabold tracking-tight whitespace-nowrap uppercase">
+          {name}
+        </Link>
+
+        <nav aria-label="Principal" className="hidden lg:block">
+          <ul className="flex items-center gap-8 text-[0.95rem]">
+            {NAV_LINKS.map((link) => (
+              <li key={link.href}>
+                <Link href={link.href} className="text-foreground/80 transition-colors hover:text-accent">
+                  {link.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        <div className="flex items-center gap-3">
+          <Link href={BOOKING_HREF} className={buttonClasses("primary", "min-h-11 px-5 max-sm:hidden")}>
+            Agendar horário
+          </Link>
+          <button
+            type="button"
+            className="inline-flex size-11 items-center justify-center text-2xl lg:hidden"
+            aria-expanded={menuOpen}
+            aria-controls="menu-movel"
+            onClick={() => setMenuOpen((open) => !open)}
+          >
+            {menuOpen ? <CloseIcon /> : <MenuIcon />}
+            <span className="sr-only">{menuOpen ? "Fechar menu" : "Abrir menu"}</span>
+          </button>
+        </div>
+      </div>
+
+      <nav
+        id="menu-movel"
+        aria-label="Principal"
+        hidden={!menuOpen}
+        className="h-[calc(100dvh-var(--header-height))] overflow-y-auto border-t border-line bg-background px-5 pb-10 lg:hidden"
+      >
+        <ul className="divide-y divide-line">
+          {NAV_LINKS.map((link) => (
+            <li key={link.href}>
+              <Link
+                href={link.href}
+                onClick={() => setMenuOpen(false)}
+                className="block py-5 font-display text-4xl font-bold uppercase"
+              >
+                {link.label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+        <Link
+          href={BOOKING_HREF}
+          onClick={() => setMenuOpen(false)}
+          className={buttonClasses("primary", "mt-8 w-full")}
+        >
+          Agendar horário
+        </Link>
+      </nav>
+    </header>
+  );
+}

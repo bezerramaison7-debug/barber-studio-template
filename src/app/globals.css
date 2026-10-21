@@ -1,0 +1,111 @@
+@import "tailwindcss";
+
+/*
+ * Cores padrão. Em tempo de execução o layout sobrescreve estas variáveis
+ * com os valores de siteConfig.theme.colors (ver src/lib/site.ts).
+ */
+:root {
+  --brand-background: #000000;
+  --brand-surface: #17181a;
+  --brand-surface-raised: #232427;
+  --brand-border: #34353a;
+  --brand-foreground: #f5f4f0;
+  --brand-muted: #a3a29c;
+  --brand-accent: #b39257;
+  --brand-accent-foreground: #000000;
+  --brand-paper: #f5f4f0;
+  --brand-ink: #17181a;
+  --header-height: 4.5rem;
+}
+
+@theme inline {
+  --color-background: var(--brand-background);
+  --color-surface: var(--brand-surface);
+  --color-surface-raised: var(--brand-surface-raised);
+  --color-line: var(--brand-border);
+  --color-foreground: var(--brand-foreground);
+  --color-muted: var(--brand-muted);
+  --color-accent: var(--brand-accent);
+  --color-accent-foreground: var(--brand-accent-foreground);
+  --color-paper: var(--brand-paper);
+  --color-ink: var(--brand-ink);
+
+  --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-display-face), "Arial Narrow", ui-sans-serif, sans-serif;
+}
+
+@layer base {
+  html {
+    scroll-padding-top: var(--header-height);
+    -webkit-text-size-adjust: 100%;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
+  body {
+    background: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    line-height: 1.6;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: var(--color-accent);
+    color: var(--color-accent-foreground);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+
+  /* Ícone do calendário nativo legível no fundo escuro. */
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1) opacity(0.7);
+  }
+}
+
+@layer components {
+  /* Linha pontilhada entre serviço e preço, como nos quadros de barbearia. */
+  .price-leader {
+    flex: 1 1 auto;
+    min-width: 1.5rem;
+    border-bottom: 2px dotted color-mix(in oklab, currentColor 35%, transparent);
+    transform: translateY(-0.35em);
+  }
+}
+
+/* Entrada única e orquestrada do hero. */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(1.25rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes settle {
+  from {
+    transform: scale(1.06);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .animate-rise {
+    animation: rise 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  .animate-settle {
+    animation: settle 2.4s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+}
