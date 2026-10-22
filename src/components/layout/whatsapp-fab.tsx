@@ -17,7 +17,7 @@ const getVisible = () => window.scrollY > window.innerHeight * 0.6;
 const getServerVisible = () => false;
 
 /** Botão flutuante de WhatsApp, sempre ao alcance do polegar no celular. */
-export function WhatsAppFab({ href }: { href: string }) {
+export function WhatsAppFab({ href, label }: { href: string; label: string }) {
   const visible = useSyncExternalStore(subscribe, getVisible, getServerVisible);
 
   return (
@@ -31,7 +31,7 @@ export function WhatsAppFab({ href }: { href: string }) {
       }`}
     >
       <WhatsAppIcon />
-      <span className="sr-only">Conversar no WhatsApp (abre em nova aba)</span>
+      <span className="sr-only">{label}</span>
     </a>
   );
 }

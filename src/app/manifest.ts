@@ -1,7 +1,9 @@
 import type { MetadataRoute } from "next";
 import { siteConfig } from "@/config/site.config";
+import { resolveThemeColors } from "@/lib/theme";
 
 export default function manifest(): MetadataRoute.Manifest {
+  const colors = resolveThemeColors(siteConfig);
   return {
     name: siteConfig.business.name,
     short_name: siteConfig.business.shortName,
@@ -9,8 +11,8 @@ export default function manifest(): MetadataRoute.Manifest {
     lang: "pt-BR",
     start_url: "/",
     display: "standalone",
-    background_color: siteConfig.theme.colors.background,
-    theme_color: siteConfig.theme.colors.background,
+    background_color: colors.background,
+    theme_color: colors.background,
     icons: [{ src: "/icon.svg", sizes: "any", type: "image/svg+xml" }],
   };
 }

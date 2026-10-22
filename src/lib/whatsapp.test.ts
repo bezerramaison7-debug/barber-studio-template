@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { buildBookingMessage, buildWhatsAppUrl, formatIsoDate, normalizePhone } from "./whatsapp";
+import {
+  buildBookingMessage,
+  buildWhatsAppUrl,
+  formatIsoDate,
+  isValidBrazilianWhatsApp,
+  looksFictitious,
+  normalizePhone,
+} from "./whatsapp";
 
 describe("normalizePhone", () => {
   it("remove tudo que não é dígito", () => {
@@ -59,5 +66,33 @@ describe("buildBookingMessage", () => {
   it("omite campos vazios ou só com espaços", () => {
     const message = buildBookingMessage("Olá!", { name: "Ana", notes: "   " });
     expect(message).toBe("Olá!\n\n*Nome:* Ana");
+  });
+});
+
+describe("isValidBrazilianWhatsApp", () => {
+  it.each(["5516991234567", "5511958342716", "551633334444"])("aceita %s", (phone) => {
+    expect(isValidBrazilianWhatsApp(phone)).toBe(true);
+  });
+
+  it.each([
+    ["sem DDI", "16991234567"],
+    ["DDI de outro país", "1416991234567"],
+    ["DDD inexistente", "5523991234567"],
+    ["celular sem o 9", "551681234567"],
+    ["fixo começando com 7", "551673334444"],
+    ["com máscara", "+55 (16) 99123-4567"],
+    ["todos iguais", "5516999999999"],
+    ["só zeros", "5516900000000"],
+    ["sequência", "5516912345678"],
+  ])("recusa %s", (_, phone) => {
+    expect(isValidBrazilianWhatsApp(phone)).toBe(false);
+  });
+});
+
+describe("looksFictitious", () => {
+  it("identifica padrões de número de exemplo", () => {
+    expect(looksFictitious("900000000")).toBe(true);
+    expect(looksFictitious("987654321")).toBe(true);
+    expect(looksFictitious("991234567")).toBe(false);
   });
 });

@@ -1,23 +1,27 @@
 "use client";
 
 import { useId, useState, useSyncExternalStore, type FormEvent } from "react";
+import type { SiteTexts } from "@/config/texts";
 import { Button } from "@/components/ui/button";
 import { WhatsAppIcon } from "@/components/ui/icons";
 import { formatDuration, formatPrice } from "@/lib/format";
 import { buildBookingMessage, buildWhatsAppUrl } from "@/lib/whatsapp";
 
 export interface BookingFormProps {
+  /** Número já validado no servidor (vazio no modo demo). Ver getWhatsAppNumber. */
   whatsapp: string;
   greeting: string;
   periods: string[];
   services: { id: string; name: string; price: number; priceFrom?: boolean; durationMinutes: number }[];
   professionals: { id: string; name: string }[];
+  /** No modo demo a mensagem é só mostrada na tela; o WhatsApp não abre sozinho. */
   demo: boolean;
+  labels: SiteTexts["booking"];
+  fromLabel: string;
 }
 
 type Errors = Partial<Record<"name" | "service", string>>;
-
-const NO_PREFERENCE = "Sem preferência";
+type Result = { url: string; message: string } | null;
 
 const fieldClasses =
   "mt-2 block w-full rounded-sm border border-line bg-surface-raised px-4 py-3 text-base text-foreground placeholder:text-muted/70 focus:border-accent focus:outline-none aria-invalid:border-red-400";
@@ -31,10 +35,10 @@ function todayIso() {
 
 const noopSubscribe = () => () => {};
 
-export function BookingForm({ whatsapp, greeting, periods, services, professionals, demo }: BookingFormProps) {
+export function BookingForm({ whatsapp, greeting, periods, services, professionals, demo, labels, fromLabel }: BookingFormProps) {
   const id = useId();
   const [errors, setErrors] = useState<Errors>({});
-  const [sentUrl, setSentUrl] = useState<string | null>(null);
+  const [result, setResult] = useState<Result>(null);
   // Calculado só no navegador: no prerender não existe "hoje".
   const minDate = useSyncExternalStore(noopSubscribe, todayIso, () => undefined);
 
@@ -44,8 +48,8 @@ export function BookingForm({ whatsapp, greeting, periods, services, professiona
     const value = (key: string) => String(data.get(key) ?? "").trim();
 
     const nextErrors: Errors = {};
-    if (!value("name")) nextErrors.name = "Escreva seu nome para o barbeiro saber quem vai chegar.";
-    if (!value("service")) nextErrors.service = "Escolha um serviço.";
+    if (!value("name")) nextErrors.name = labels.nameError;
+    if (!value("service")) nextErrors.service = labels.serviceError;
     setErrors(nextErrors);
 
     if (Object.keys(nextErrors).length > 0) {
@@ -60,15 +64,16 @@ export function BookingForm({ whatsapp, greeting, periods, services, professiona
     const message = buildBookingMessage(greeting, {
       name: value("name"),
       serviceName: service?.name,
-      professionalName: value("professional") || NO_PREFERENCE,
+      professionalName: value("professional") || labels.noPreference,
       date: value("date"),
       period: value("period"),
       notes: value("notes"),
     });
 
-    const url = buildWhatsAppUrl(whatsapp, message);
-    setSentUrl(url);
-    window.open(url, "_blank", "noopener,noreferrer");
+    // Sem número válido (demo) o link não tem destinatário: nunca chega a um número fictício.
+    const url = buildWhatsAppUrl(demo ? "" : whatsapp, message);
+    setResult({ url, message });
+    if (!demo) window.open(url, "_blank", "noopener,noreferrer");
   }
 
   const errorId = (field: keyof Errors) => `${id}-${field}-erro`;
@@ -76,12 +81,12 @@ export function BookingForm({ whatsapp, greeting, periods, services, professiona
   return (
     <form noValidate onSubmit={handleSubmit} className="grid gap-6" aria-describedby={`${id}-ajuda`}>
       <p id={`${id}-ajuda`} className="text-sm text-muted">
-        Campos com * são obrigatórios. Nada é salvo neste site: a mensagem vai direto para o WhatsApp.
+        {labels.requiredHint}
       </p>
 
       <div>
         <label htmlFor={`${id}-name`} className="font-semibold">
-          Seu nome *
+          {labels.nameLabel} *
         </label>
         <input
           id={`${id}-name`}
@@ -102,7 +107,7 @@ export function BookingForm({ whatsapp, greeting, periods, services, professiona
       <div className="grid gap-6 sm:grid-cols-2">
         <div>
           <label htmlFor={`${id}-service`} className="font-semibold">
-            Serviço *
+            {labels.serviceLabel} *
           </label>
           <select
             id={`${id}-service`}
@@ -113,11 +118,11 @@ export function BookingForm({ whatsapp, greeting, periods, services, professiona
             aria-describedby={errors.service ? errorId("service") : undefined}
           >
             <option value="" disabled>
-              Escolha um serviço
+              {labels.servicePlaceholder}
             </option>
             {services.map((service) => (
               <option key={service.id} value={service.id}>
-                {service.name} · {service.priceFrom ? "a partir de " : ""}
+                {service.name} · {service.priceFrom ? `${fromLabel} ` : ""}
                 {formatPrice(service.price)} · {formatDuration(service.durationMinutes)}
               </option>
             ))}
@@ -129,31 +134,33 @@ export function BookingForm({ whatsapp, greeting, periods, services, professiona
           )}
         </div>
 
-        <div>
-          <label htmlFor={`${id}-professional`} className="font-semibold">
-            Profissional
-          </label>
-          <select id={`${id}-professional`} name="professional" defaultValue="" className={fieldClasses}>
-            <option value="">{NO_PREFERENCE}</option>
-            {professionals.map((p) => (
-              <option key={p.id} value={p.name}>
-                {p.name}
-              </option>
-            ))}
-          </select>
-        </div>
+        {professionals.length > 0 && (
+          <div>
+            <label htmlFor={`${id}-professional`} className="font-semibold">
+              {labels.professionalLabel}
+            </label>
+            <select id={`${id}-professional`} name="professional" defaultValue="" className={fieldClasses}>
+              <option value="">{labels.noPreference}</option>
+              {professionals.map((p) => (
+                <option key={p.id} value={p.name}>
+                  {p.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
       </div>
 
       <div className="grid gap-6 sm:grid-cols-2">
         <div>
           <label htmlFor={`${id}-date`} className="font-semibold">
-            Data preferida
+            {labels.dateLabel}
           </label>
           <input id={`${id}-date`} name="date" type="date" min={minDate} className={fieldClasses} />
         </div>
 
         <fieldset>
-          <legend className="font-semibold">Período</legend>
+          <legend className="font-semibold">{labels.periodLabel}</legend>
           <div className="mt-2 grid grid-cols-3 gap-2">
             {periods.map((period) => (
               <label
@@ -170,36 +177,54 @@ export function BookingForm({ whatsapp, greeting, periods, services, professiona
 
       <div>
         <label htmlFor={`${id}-notes`} className="font-semibold">
-          Observações
+          {labels.notesLabel}
         </label>
         <textarea
           id={`${id}-notes`}
           name="notes"
           rows={3}
-          placeholder="Ex.: quero manter o comprimento em cima"
+          placeholder={labels.notesPlaceholder}
           className={fieldClasses}
         />
       </div>
 
       <Button type="submit" className="w-full sm:w-auto sm:justify-self-start">
         <WhatsAppIcon className="text-xl" />
-        Enviar pelo WhatsApp
+        {demo ? "Ver mensagem de teste" : labels.submit}
       </Button>
 
       <div aria-live="polite">
-        {sentUrl && (
-          <p className="rounded-sm border border-line bg-surface-raised p-4 text-sm">
-            Mensagem pronta. Se o WhatsApp não abriu,{" "}
+        {result && demo && (
+          <div className="rounded-sm border border-accent/60 bg-surface-raised p-4 text-sm">
+            <p className="font-semibold">Demonstração: nada foi enviado.</p>
+            <p className="mt-1 text-muted">
+              No site de uma barbearia real, esta mensagem abriria o WhatsApp do estabelecimento:
+            </p>
+            {/* Sem os asteriscos de negrito, que só fazem sentido dentro do WhatsApp. */}
+            <pre className="mt-3 font-sans whitespace-pre-wrap text-foreground">{result.message.replace(/\*/g, "")}</pre>
             <a
-              href={sentUrl}
+              href={result.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 inline-flex min-h-11 items-center font-semibold text-accent underline underline-offset-4"
+            >
+              Testar no meu WhatsApp, escolhendo o contato
+              <span className="sr-only"> (abre em nova aba)</span>
+            </a>
+          </div>
+        )}
+        {result && !demo && (
+          <p className="rounded-sm border border-line bg-surface-raised p-4 text-sm">
+            {labels.sent}{" "}
+            <a
+              href={result.url}
               target="_blank"
               rel="noopener noreferrer"
               className="font-semibold text-accent underline underline-offset-4"
             >
-              abra o WhatsApp por aqui
+              {labels.sentLink}
             </a>
             .
-            {demo && !whatsapp && " Nesta demonstração não há número cadastrado: escolha um contato para testar."}
           </p>
         )}
       </div>

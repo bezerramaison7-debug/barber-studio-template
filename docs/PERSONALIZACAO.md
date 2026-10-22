@@ -1,125 +1,144 @@
-# Guia de personalização
+# Guia de personalização para um novo cliente
 
-Como transformar o template Barber Studio no site de uma barbearia real. Tempo estimado:
-1 a 2 horas, com os dados e as fotos do cliente em mãos.
+Como transformar o template no site de uma barbearia real. Tempo estimado: 1 a 3 horas, com os dados
+e as fotos do cliente em mãos. Antes de publicar, siga o
+[checklist de publicação e LGPD](CHECKLIST-PUBLICACAO-LGPD.md).
 
-## 1. Antes de começar: o que pedir ao cliente
+## 1. O que pedir ao cliente
 
+- [ ] Plano contratado: Essencial ou Premium ([diferenças](PLANOS.md))
 - [ ] Nome do estabelecimento e uma frase curta de apresentação
-- [ ] Número do WhatsApp que vai receber os agendamentos
+- [ ] **Número do WhatsApp** que vai receber os agendamentos
+- [ ] Razão social (ou nome do responsável), CNPJ se quiser exibir e um e-mail para pedidos de dados (LGPD)
 - [ ] Endereço completo, CEP e link do Google Maps (o da ficha do Google Meu Negócio, se houver)
-- [ ] Horários de cada dia da semana
+- [ ] Horários de cada dia da semana e cidades atendidas
 - [ ] Tabela de serviços: nome, descrição curta, duração e preço
-- [ ] Profissionais: nome, especialidades, uma frase e foto (com autorização de uso de imagem)
-- [ ] 8 a 12 fotos do espaço e de trabalhos (de preferência na horizontal e na vertical)
+- [ ] **Fotos próprias** do espaço e de trabalhos, com autorização de uso de imagem de quem aparece
 - [ ] Links de Instagram, Facebook e TikTok
-- [ ] Cores da marca, se existirem (logo, fachada, uniforme)
+- [ ] Premium: profissionais (nome, especialidades, uma frase, foto autorizada), perguntas frequentes e,
+      se fizer sentido, um texto mais longo para os serviços principais
+- [ ] Cores da marca, se existirem
 - [ ] Domínio desejado (ex.: `barbeariadocliente.com.br`)
-- [ ] Formas de pagamento e políticas de atraso/cancelamento para as dúvidas frequentes
 
-## 2. Crie uma cópia para o cliente
+## 2. Crie o repositório do cliente
 
-Recomendado: um repositório por cliente, criado a partir deste template
-(no GitHub: **Use this template**, ou faça um fork). Assim correções no template podem ser
-trazidas depois sem misturar dados de clientes.
+Um repositório por cliente, criado a partir deste template (no GitHub: **Use this template**). Assim as
+correções do template podem ser trazidas depois sem misturar dados de clientes.
 
 ## 3. Edite `src/config/site.config.ts`
 
-Todos os campos estão documentados em `src/config/types.ts`. Os principais:
+Cada campo está documentado em `src/config/types.ts`. Comece com `demo: true` enquanto preenche e só
+mude para `false` no fim (seção 8).
 
-| Campo                  | O que é                                                                                      |
-| ---------------------- | -------------------------------------------------------------------------------------------- |
-| `demo`                 | `true` mostra avisos de conteúdo fictício e bloqueia o Google. **Mude para `false` só no final.** |
-| `business`             | nome, frase de topo (`tagline`), descrição e faixa de preço (`$`, `$$`, `$$$`)              |
-| `about`                | título, texto e três destaques da seção "Sobre"                                              |
-| `url`                  | domínio final, sem barra no fim. A variável `NEXT_PUBLIC_SITE_URL` tem prioridade           |
-| `theme.colors`         | cores em hexadecimal (ver seção 5)                                                           |
-| `contact.whatsapp`     | só dígitos com país e DDD: `5516991234567`                                                   |
-| `contact.phoneDisplay` | como o telefone aparece na tela: `(16) 99123-4567`                                           |
-| `address`              | endereço, coordenadas, link "Como chegar" e link do mapa incorporado                         |
-| `serviceArea`          | cidades atendidas (aparecem no rodapé e no SEO)                                              |
-| `hours`                | um item por dia (`0` = domingo … `6` = sábado). Sem `open`/`close` = fechado                 |
-| `social`               | URLs completas. Redes sem URL não aparecem                                                   |
-| `serviceCategories`    | grupos da tabela de preços, na ordem em que aparecem                                        |
-| `services`             | serviços; `featured: true` coloca na seção "Serviços"; `priceFrom: true` mostra "a partir de" |
-| `team`                 | profissionais; sem `photo`, o cartão mostra as iniciais                                      |
-| `gallery`              | fotos da galeria, com largura e altura reais                                                 |
-| `faq`                  | perguntas e respostas (também viram dados estruturados para o Google)                        |
-| `booking`              | primeira linha da mensagem do WhatsApp e períodos do formulário                              |
-| `seo`                  | título, descrição e palavras-chave. Use "barbearia em <cidade>" e o bairro                   |
+| Campo | O que preencher |
+| --- | --- |
+| `plan` | `"essencial"` ou `"premium"` |
+| `business` | nome, frase do topo (`tagline`), descrição e faixa de preço (`$`, `$$`, `$$$`) |
+| `about` | título, texto e três destaques da seção "Sobre" |
+| `url` | domínio final, com `https://` e sem barra no fim |
+| `theme.preset` | `"classico"`, `"grafite"` ou `"carvalho"`; no premium, `theme.colors` ajusta cores |
+| `contact.whatsapp` | só dígitos: `55` + DDD + número, ex.: `5516991234567` |
+| `contact.whatsappConfirmedAt` | data (AAAA-MM-DD) do teste do número (seção 4) |
+| `contact.phoneDisplay` | como o telefone aparece na tela, ex.: `(16) 99123-4567` |
+| `contact.email` | e-mail de contato |
+| `legal` | responsável (razão social), CNPJ opcional, e-mail para pedidos de dados, data da política |
+| `imageRights` | `status: "confirmados"`, como as fotos foram obtidas e a data (seção 5) |
+| `address` | endereço, coordenadas, link "Como chegar" e link do mapa incorporado |
+| `serviceArea` | cidades atendidas (rodapé e SEO local) |
+| `hours` | um item por dia (`0` = domingo … `6` = sábado). Sem `open`/`close` = fechado |
+| `social` | URLs completas; rede sem URL não aparece |
+| `serviceCategories` / `services` | grupos e serviços. `featured: true` destaca; `priceFrom: true` mostra "a partir de"; `page` cria página própria (premium) |
+| `team` / `faq` | premium: equipe e perguntas frequentes |
+| `gallery` / `images` | fotos (seção 5) |
+| `booking` | primeira linha da mensagem do WhatsApp e períodos do formulário |
+| `seo` | título, descrição e palavras-chave com "barbearia em <cidade>" e o bairro |
+| `texts` | opcional: muda títulos, botões e rótulos (seção 6) |
 
 ### Endereço e mapa
 
 1. No Google Maps, procure o estabelecimento.
 2. **Compartilhar → Enviar um link**: cole em `address.mapsUrl`.
-3. **Compartilhar → Incorporar um mapa**: copie só o valor de `src="…"` do iframe e cole em
-   `address.mapsEmbedUrl`.
-4. Clique com o botão direito no ponto do mapa para copiar latitude e longitude para
-   `address.geo`.
+3. **Compartilhar → Incorporar um mapa**: copie só o valor de `src="…"` para `address.mapsEmbedUrl`.
+4. Clique com o botão direito no ponto do mapa para copiar latitude e longitude para `address.geo`.
 
-## 4. Troque as imagens
+## 4. WhatsApp: número válido e confirmado
 
-Coloque as fotos em `public/images/` e atualize `src`, `alt`, `width` e `height` no config.
+O build de um site real recusa número inválido ou sem confirmação. Para confirmar:
 
-- **Tamanho**: 1600 a 2000 px de largura para o topo; 1200 px para a galeria. JPG com qualidade
-  70 a 80 basta: o Next.js converte para AVIF/WebP automaticamente.
-- **Texto alternativo (`alt`)**: descreva o que aparece ("Barbeiro fazendo degradê na máquina"),
-  não "foto1". É obrigatório para acessibilidade e ajuda no SEO.
-- **Largura e altura**: veja nas propriedades do arquivo, ou rode
-  `identify public/images/arquivo.jpg` (ImageMagick).
-- **Equipe**: fotos na vertical (4:5) ficam melhores. Inclua em `team[].photo`.
-- Ícone da aba: edite `src/app/icon.svg` (ou troque por `icon.png` 512×512).
+1. Preencha `contact.whatsapp` com o número do cliente (só dígitos, com 55 e DDD).
+2. Rode o site (`npm run dev`), clique em "Chamar no WhatsApp" e envie uma mensagem de teste.
+3. Peça ao cliente para confirmar que recebeu no aparelho certo.
+4. Registre a data: `whatsappConfirmedAt: "2026-11-05"`.
 
-A imagem de compartilhamento (aparece ao mandar o link no WhatsApp) é gerada automaticamente
-a partir da foto do topo e do nome.
+O validador recusa DDD inexistente, número sem o 55, e padrões de exemplo como `99999-9999`,
+`90000-0000` e sequências (`91234-5678`). Em modo demo, nenhum número é usado nos links, mesmo que
+esteja preenchido.
 
-## 5. Cores
+## 5. Fotos e direitos de imagem
 
-A paleta padrão é preto, grafite, branco e dourado discreto. Para adaptar à marca:
+- Use **fotos do próprio estabelecimento**. Pessoas reconhecíveis (barbeiros, clientes) precisam de
+  autorização de uso de imagem por escrito.
+- Coloque os arquivos em `public/images/` e atualize `src`, `alt`, `width` e `height`.
+- Tamanho: 1600–2000 px de largura para o topo; 1200 px para a galeria; JPG qualidade 70–80 (o Next
+  converte para AVIF/WebP).
+- `alt`: descreva o que aparece ("Barbeiro fazendo degradê na máquina"), não "foto1".
+- Largura e altura: `identify public/images/arquivo.jpg` (ImageMagick) ou as propriedades do arquivo.
+- Ao final, registre em `imageRights`:
 
-- Troque principalmente `accent` (cor de destaque). Mantenha o restante escuro para não perder
-  o acabamento.
-- `accentForeground` é a cor do texto sobre o destaque: preto para cores claras, branco para
-  escuras.
-- Confira o contraste em https://webaim.org/resources/contrastchecker/ (mínimo 4.5:1 para texto).
-
-As cores viram variáveis CSS (`--brand-*`) usadas pelo Tailwind (`bg-accent`, `text-muted`,
-etc.). Não é preciso editar classes dos componentes.
-
-## 6. Textos fixos
-
-Alguns textos que não variam muito ficam nos componentes, em `src/components/sections/`:
-os passos do agendamento (`booking.tsx`) e as introduções das seções. Ajuste se o cliente pedir.
-A página de privacidade é `src/app/privacidade/page.tsx`: revise com o cliente.
-
-## 7. Confira e publique
-
-```bash
-npm test          # valida o config: ids, horários, WhatsApp, cores, imagens
-npm run lint
-npm run build
-npm start         # revise em http://localhost:3000, no celular e no computador
+```ts
+imageRights: {
+  status: "confirmados",
+  notes: "Fotos feitas pelo cliente; autorização de imagem dos 3 barbeiros assinada.",
+  confirmedAt: "2026-11-05",
+},
 ```
 
-Checklist final:
+## 6. Textos
 
-- [ ] `demo: false`
-- [ ] Nenhum texto "fictício" ou "demonstrativo" sobrando (procure por essas palavras)
-- [ ] WhatsApp testado: o formulário abre a conversa com o número certo
-- [ ] Endereço, mapa e "Como chegar" apontam para o lugar certo
-- [ ] Horários conferidos com o cliente
-- [ ] Fotos próprias, com autorização de uso de imagem
-- [ ] `NEXT_PUBLIC_SITE_URL` definido na Vercel com o domínio final
-- [ ] Domínio configurado e com HTTPS
-- [ ] Ficha do Google Meu Negócio com o link do site (ajuda muito no SEO local)
-- [ ] Cliente aprovou a versão final
+- **Conteúdo do cliente** (serviços, sobre, FAQ, SEO): direto no config.
+- **Textos de interface** (títulos de seção, botões, rótulos do formulário, rodapé): os padrões estão em
+  `src/config/texts.ts`. Para mudar, use `texts` no config informando só o que muda:
 
-Publicação na Vercel: veja a seção "Publicar na Vercel" do `README.md`.
+```ts
+texts: {
+  services: { title: "Cortes e barba", intro: "O que fazemos." },
+  booking: { steps: ["Escolha o serviço.", "Envie pelo WhatsApp.", "Aguarde a confirmação."] },
+},
+```
 
-## Sobre avaliações de clientes
+Marcadores disponíveis: `{cidade}`, `{bairro}` e `{nome}`.
 
-O template **não** inclui depoimentos nem notas de propósito. Se o cliente quiser exibir
-avaliações, use apenas avaliações reais e verificáveis (por exemplo, com link para o perfil no
-Google), e só então considere adicionar `aggregateRating` aos dados estruturados em
-`src/lib/site.ts`. Avaliações inventadas violam as regras do Google e o Código de Defesa do
-Consumidor.
+**Regra de redação:** descreva o que existe. Não prometa tempo de espera, resultado, exclusividade,
+qualidade superior nem cite avaliações que o cliente não possa comprovar (Código de Defesa do
+Consumidor, art. 37). O build avisa quando encontra termos como "melhor", "garantia", "sem fila",
+"nº 1" ou "avaliações"; confirme cada um com o cliente.
+
+## 7. Ícone e cores
+
+- Ícone da aba: edite `src/app/icon.svg` (ou troque por `icon.png` 512×512).
+- Cores: escolha o preset; no premium, ajuste em `theme.colors`. Confira o contraste (mínimo 4.5:1).
+
+## 8. Saia do modo demonstração
+
+1. Mude `demo: false`.
+2. Rode `npm test` e `npm run build`. O build lista **tudo** o que ainda falta, por exemplo:
+
+```
+site.config.ts tem 3 problema(s) a corrigir antes de publicar:
+- contact.whatsappConfirmedAt: informe a data (AAAA-MM-DD) em que uma mensagem de teste foi recebida…
+- imageRights: confirme os direitos de uso de todas as fotos…
+- config.faq[2].answer: ainda contém texto de demonstração ("Avise pelo WhatsApp… Exemplo de política…")
+```
+
+3. Corrija até o build passar. Os avisos (afirmações comerciais) não bloqueiam, mas revise cada um.
+4. Siga o [checklist de publicação e LGPD](CHECKLIST-PUBLICACAO-LGPD.md).
+
+## Comandos úteis
+
+```bash
+npm run dev                         # desenvolvimento em http://localhost:3000
+npm test                            # valida o config e a lógica
+npm run lint && npm run typecheck
+npm run build && npm start          # versão de produção local
+SITE_PLAN=essencial npm run build   # ver como fica no plano essencial
+```

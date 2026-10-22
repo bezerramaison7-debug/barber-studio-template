@@ -1,42 +1,52 @@
+import type { SiteTexts } from "@/config/texts";
 import type { SiteConfig } from "@/config/types";
 import { LinkButton } from "@/components/ui/button";
 import { MailIcon, MapPinIcon, PhoneIcon, WhatsAppIcon } from "@/components/ui/icons";
 import { Section } from "@/components/ui/section";
 import { SocialLinks } from "@/components/layout/social-links";
 import { groupHours } from "@/lib/hours";
-import { getFullAddress, getWhatsAppUrl } from "@/lib/site";
+import { getFullAddress, getWhatsAppNumber, getWhatsAppUrl } from "@/lib/site";
+import { fillText } from "@/lib/texts";
 import { MapEmbed } from "./map-embed";
 import { OpenStatus } from "./open-status";
 
-export function Contact({ config }: { config: SiteConfig }) {
+export function Contact({ config, texts }: { config: SiteConfig; texts: SiteTexts }) {
   const { address, contact } = config;
+  const t = texts.contact;
+  // Telefone clicável só com número válido e fora do modo demo (mesma regra do WhatsApp).
+  const phone = getWhatsAppNumber(config);
 
   return (
     <Section
       id="contato"
       tone="graphite"
-      title="Contato e localização"
-      intro={`No centro de ${address.city}, com atendimento para toda a região.`}
+      title={t.title}
+      intro={fillText(t.intro, config)}
     >
       <div className="grid gap-10 lg:grid-cols-2">
-        <MapEmbed src={address.mapsEmbedUrl} title={`Mapa com a localização da ${config.business.name}`} />
+        <MapEmbed
+          src={address.mapsEmbedUrl}
+          title={fillText(t.mapTitle, config)}
+          notice={t.mapNotice}
+          buttonLabel={t.mapButton}
+        />
 
         <div className="space-y-10">
           <div>
             <h3 className="flex items-center gap-2 text-xl font-semibold">
-              <MapPinIcon className="text-accent" /> Endereço
+              <MapPinIcon className="text-accent" /> {t.addressTitle}
             </h3>
             <address className="mt-3 text-lg text-muted not-italic">{getFullAddress(config)}</address>
             <LinkButton href={address.mapsUrl} external variant="outline" className="mt-5">
-              Como chegar
+              {t.directions}
             </LinkButton>
           </div>
 
           <div>
-            <h3 className="text-xl font-semibold">Horário de funcionamento</h3>
+            <h3 className="text-xl font-semibold">{t.hoursTitle}</h3>
             <OpenStatus hours={config.hours} timeZone={config.timeZone} className="mt-2 min-h-6 text-sm text-muted" />
             <table className="mt-4 w-full max-w-md text-left">
-              <caption className="sr-only">Horários de atendimento por dia da semana</caption>
+              <caption className="sr-only">{t.hoursCaption}</caption>
               <tbody className="divide-y divide-line">
                 {groupHours(config.hours).map((row) => (
                   <tr key={row.label}>
@@ -55,13 +65,13 @@ export function Contact({ config }: { config: SiteConfig }) {
           </div>
 
           <div>
-            <h3 className="text-xl font-semibold">Fale com a gente</h3>
+            <h3 className="text-xl font-semibold">{t.talkTitle}</h3>
             <ul className="mt-4 space-y-3 text-muted">
               {contact.phoneDisplay && (
                 <li className="flex items-center gap-3">
                   <PhoneIcon className="text-accent" />
-                  {contact.whatsapp ? (
-                    <a href={`tel:+${contact.whatsapp}`} className="hover:text-accent">
+                  {phone ? (
+                    <a href={`tel:+${phone}`} className="hover:text-accent">
                       {contact.phoneDisplay}
                     </a>
                   ) : (
@@ -80,9 +90,9 @@ export function Contact({ config }: { config: SiteConfig }) {
             </ul>
             <div className="mt-6 flex flex-wrap items-center gap-4">
               <LinkButton href={getWhatsAppUrl(config)} external>
-                <WhatsAppIcon className="text-xl" /> Chamar no WhatsApp
+                <WhatsAppIcon className="text-xl" /> {t.whatsappButton}
               </LinkButton>
-              <SocialLinks social={config.social} />
+              <SocialLinks social={config.social} newTabLabel={texts.newTab} />
             </div>
           </div>
         </div>

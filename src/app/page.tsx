@@ -1,4 +1,5 @@
 import { siteConfig } from "@/config/site.config";
+import { JsonLd } from "@/components/seo/json-ld";
 import { About } from "@/components/sections/about";
 import { Booking } from "@/components/sections/booking";
 import { Contact } from "@/components/sections/contact";
@@ -8,42 +9,30 @@ import { Hero } from "@/components/sections/hero";
 import { Pricing } from "@/components/sections/pricing";
 import { Services } from "@/components/sections/services";
 import { Team } from "@/components/sections/team";
-import { buildLocalBusinessJsonLd } from "@/lib/site";
-
-/** Serializa JSON-LD escapando "<" para impedir injeção de HTML. */
-function JsonLd({ data }: { data: object }) {
-  return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(data).replace(/</g, "\\u003c") }}
-    />
-  );
-}
+import { getFeatures, getServicesWithPage } from "@/lib/plan";
+import { buildFaqJsonLd, buildLocalBusinessJsonLd } from "@/lib/site";
+import { getTexts } from "@/lib/texts";
 
 export default function HomePage() {
-  const faqJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: siteConfig.faq.map((item) => ({
-      "@type": "Question",
-      name: item.question,
-      acceptedAnswer: { "@type": "Answer", text: item.answer },
-    })),
-  };
+  const texts = getTexts(siteConfig);
+  const features = getFeatures(siteConfig);
+  const pageIds = new Set(getServicesWithPage(siteConfig).map((s) => s.id));
+  const showFaq = features.faq && siteConfig.faq.length > 0;
+  const showTeam = features.team && siteConfig.team.length > 0;
 
   return (
     <>
       <JsonLd data={buildLocalBusinessJsonLd(siteConfig)} />
-      <JsonLd data={faqJsonLd} />
-      <Hero config={siteConfig} />
+      {showFaq && <JsonLd data={buildFaqJsonLd(siteConfig)} />}
+      <Hero config={siteConfig} texts={texts} />
       <About config={siteConfig} />
-      <Services config={siteConfig} />
-      <Pricing config={siteConfig} />
-      <Team config={siteConfig} />
-      <GallerySection config={siteConfig} />
-      <Booking config={siteConfig} />
-      <Faq config={siteConfig} />
-      <Contact config={siteConfig} />
+      <Services config={siteConfig} texts={texts} pageIds={pageIds} />
+      <Pricing config={siteConfig} texts={texts} />
+      {showTeam && <Team config={siteConfig} texts={texts} />}
+      <GallerySection config={siteConfig} texts={texts} />
+      <Booking config={siteConfig} texts={texts} withForm={features.bookingForm} />
+      {showFaq && <Faq config={siteConfig} texts={texts} />}
+      <Contact config={siteConfig} texts={texts} />
     </>
   );
 }

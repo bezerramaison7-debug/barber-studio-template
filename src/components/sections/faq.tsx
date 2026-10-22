@@ -1,10 +1,11 @@
+import type { SiteTexts } from "@/config/texts";
 import type { SiteConfig } from "@/config/types";
 import { ChevronIcon } from "@/components/ui/icons";
 import { Section } from "@/components/ui/section";
 
-export function Faq({ config }: { config: SiteConfig }) {
+export function Faq({ config, texts }: { config: SiteConfig; texts: SiteTexts }) {
   return (
-    <Section id="duvidas" title="Dúvidas frequentes">
+    <Section id="duvidas" title={texts.faq.title}>
       <div className="max-w-3xl divide-y divide-line border-y border-line">
         {config.faq.map((item) => (
           <details key={item.question} className="group py-2">

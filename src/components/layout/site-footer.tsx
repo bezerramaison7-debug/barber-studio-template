@@ -1,24 +1,36 @@
 import Link from "next/link";
+import type { SiteTexts } from "@/config/texts";
 import type { SiteConfig } from "@/config/types";
 import { Container } from "@/components/ui/section";
+import type { NavLink } from "@/lib/navigation";
 import { getFullAddress } from "@/lib/site";
-import { NAV_LINKS } from "./nav-links";
 import { SocialLinks } from "./social-links";
 
-export function SiteFooter({ config }: { config: SiteConfig }) {
+/** "A, B e C" a partir de uma lista. */
+function joinCities(cities: string[]): string {
+  return cities.length <= 1 ? (cities[0] ?? "") : `${cities.slice(0, -1).join(", ")} e ${cities.at(-1)}`;
+}
+
+interface SiteFooterProps {
+  config: SiteConfig;
+  texts: SiteTexts;
+  links: NavLink[];
+}
+
+export function SiteFooter({ config, texts, links }: SiteFooterProps) {
   return (
     <footer className="border-t border-line bg-background pt-16 pb-28 sm:pb-16">
       <Container className="grid gap-12 md:grid-cols-[1.4fr_1fr_1fr]">
         <div>
           <p className="font-display text-4xl font-extrabold uppercase">{config.business.name}</p>
           <p className="mt-3 max-w-sm text-muted">{config.business.tagline}</p>
-          <SocialLinks social={config.social} className="mt-6" />
+          <SocialLinks social={config.social} newTabLabel={texts.newTab} className="mt-6" />
         </div>
 
         <nav aria-label="Rodapé">
-          <p className="font-semibold">Navegação</p>
+          <p className="font-semibold">{texts.footer.navTitle}</p>
           <ul className="mt-2 text-muted">
-            {NAV_LINKS.map((link) => (
+            {links.map((link) => (
               <li key={link.href}>
                 <Link href={link.href} className="inline-flex min-h-11 items-center hover:text-accent">
                   {link.label}
@@ -27,17 +39,17 @@ export function SiteFooter({ config }: { config: SiteConfig }) {
             ))}
             <li>
               <Link href="/privacidade" className="inline-flex min-h-11 items-center hover:text-accent">
-                Privacidade
+                {texts.footer.privacy}
               </Link>
             </li>
           </ul>
         </nav>
 
         <div>
-          <p className="font-semibold">Endereço</p>
+          <p className="font-semibold">{texts.footer.addressTitle}</p>
           <address className="mt-4 text-muted not-italic">{getFullAddress(config)}</address>
           <p className="mt-4 text-sm text-muted">
-            Atendemos {config.serviceArea.slice(0, -1).join(", ")} e {config.serviceArea.at(-1)}.
+            {texts.footer.serviceAreaPrefix} {joinCities(config.serviceArea)}.
           </p>
         </div>
       </Container>
